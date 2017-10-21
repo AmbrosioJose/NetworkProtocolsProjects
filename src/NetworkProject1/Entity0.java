@@ -25,6 +25,8 @@ public class Entity0 extends Entity
             distanceTable[i][i] = 0;
             
          }
+        
+        printDT();
         //creates a packet and sends packet to 1
         Packet dtPacket = new Packet(0, 1, currentShortestPath);
         NetworkSimulator.toLayer2(dtPacket);
@@ -40,7 +42,7 @@ public class Entity0 extends Entity
         
         
         System.out.println("Entity0 initialized");
-        printDT();
+        
     }
     
     // Handle updates when a packet is received.  Students will need to call
@@ -49,7 +51,10 @@ public class Entity0 extends Entity
     // the packet correctly.  Read the warning in NetworkSimulator.java for more
     // details.
     public void update(Packet p)
-    {        
+    {       
+
+    	System.out.print("--------------------------------");
+    	System.out.print("update start: \n");
     	 boolean ready = false;
     	 // creates an array of this Entity's current shortest path. 
     	 // used for ease of access
@@ -65,6 +70,9 @@ public class Entity0 extends Entity
            if(p.getMincost(i)+currentShortestPath[p.getSource()] < distanceTable[p.getDest()][i]){
              //then set my current shortest path to i equal to your shortest path to i + my shortest path to you
         	   distanceTable[p.getDest()][i] = p.getMincost(i)+currentShortestPath[p.getSource()];
+        	   
+
+        	   currentShortestPath[i]=distanceTable[p.getDest()][i];
              //Since there was a change to the entity's list of shortest paths 
              //all other entity's must be sent the update
              ready = true;
@@ -74,6 +82,7 @@ public class Entity0 extends Entity
          for(int i = 0; i<4; i++){
         		if (distanceTable[p.getSource()][i]>p.getMincost(i)){
             		distanceTable[p.getSource()][i]=p.getMincost(i);
+            		ready = true;
             	}
          }
          
@@ -94,8 +103,12 @@ public class Entity0 extends Entity
              NetworkSimulator.toLayer2(dtPacket);
              
          }
+
+         System.out.print("--------------------------------");
          System.out.println("Entity0 Update Complete. Distance Table is:");
+
          printDT();
+         System.out.print("--------------------------------\n");
     }
     
     public void linkCostChangeHandler(int whichLink, int newCost)
